@@ -1,12 +1,9 @@
 from functools import cache
 
 
-prev = {}
 def day_11(filename, stop):
     with open(filename, 'r') as f:
         nums = [ int(c) for c in f.readline().strip().split(' ') ]
-    global prev
-    prev = {}
 
     res = 0
     for n in nums:
