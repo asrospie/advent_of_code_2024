@@ -19,16 +19,39 @@ def print_grid(robots, x_max, y_max, x_mid, y_mid):
 
     for y in range(y_max):
         for x in range(x_max):
-            # if x == x_mid or y == y_mid:
-            #     print('.', end='')
-            # else:
-            #     print(grid[y][x], end='')
+            if x == x_mid or y == y_mid:
+                print('.', end='')
+            else:
+                print(grid[y][x], end='')
+        print()
+
+
+def print_grid_tree(robots, x_max, y_max):
+    grid = [ [ 0 for _ in range(x_max) ] for _ in range(y_max) ]
+    
+    for r in robots:
+        pos = r[0]
+        grid[pos[1]][pos[0]] += 1
+
+
+    for y in range(y_max):
+        for x in range(x_max):
             if grid[y][x] == 0:
                 print('.', end='')
             else: 
                 print('#', end='')
         print()
 
+
+def find_grid_tree(robots, x_max):
+    grid = [ 0 for _ in range(x_max) ]
+
+    for r in robots:
+        if r[0][1] == 0:
+            grid[r[0][1]] += 1
+
+
+    return all([ x > 0 for x in grid ])
 
 
 def move_robot(r, x_max, y_max):
@@ -50,18 +73,7 @@ def move_robot(r, x_max, y_max):
     return [pos, v]
 
 
-def day_14_part_1(filename, x_max, y_max):
-    robots = parse_input(filename)
-
-    y_mid = int(y_max / 2)
-    x_mid = int(x_max / 2)
-
-    seconds_elapsed = 100
-
-
-    for _ in range(seconds_elapsed):
-        robots = list(map(lambda x: move_robot(x, x_max, y_max), robots))
-
+def find_safety_factor(robots, x_max, y_max, x_mid, y_mid):
     q1 = 0
     q2 = 0
     q3 = 0
@@ -84,25 +96,41 @@ def day_14_part_1(filename, x_max, y_max):
     return q1 * q2 * q3 * q4
 
 
+def day_14_part_1(filename, x_max, y_max):
+    robots = parse_input(filename)
 
+    y_mid = int(y_max / 2)
+    x_mid = int(x_max / 2)
+
+    seconds_elapsed = 100
+
+
+    for _ in range(seconds_elapsed):
+        robots = list(map(lambda x: move_robot(x, x_max, y_max), robots))
+
+    return find_safety_factor(robots, x_max, y_max, x_mid, y_mid)
+
+
+
+# look for lowest safety factor
 def day_14_part_2(filename, x_max, y_max, seconds_elapsed):
     robots = parse_input(filename)
 
     y_mid = int(y_max / 2)
     x_mid = int(x_max / 2)
 
-
-    for n in range(seconds_elapsed):
+    sfs = []
+    for _ in range(seconds_elapsed):
         robots = list(map(lambda x: move_robot(x, x_max, y_max), robots))
-        print_grid(robots, x_max, y_max, x_mid, y_mid)
+        sfs.append(find_safety_factor(robots, x_max, y_max, x_mid, y_mid))
+
+    return sfs.index(min(sfs)) + 1
 
 
 def main():
     print(day_14_part_1('day_14.test', 11, 7))
     print(day_14_part_1('day_14.input', 101, 103))
-    # print(day_14_part_2('day_14.test'))
-    # print(day_14_part_2('day_14.input'))
-
+    print(day_14_part_2('day_14.input', 101, 103, 10_000))
 
 if __name__ == '__main__':
     main()
